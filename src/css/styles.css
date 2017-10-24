@@ -1,9 +1,14 @@
 /* Pingas Pongas Stylesheet */
+body {
+    margin: 0;
+}
+
 .centered-content {
     display: block;
     text-align: center;
 }
 
-div.centered-content {
+.centered-content > textarea {
+    display: inline-block;
     vertical-align: middle;
 }
