@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Pingas Pongas</title>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="styles.css">
+        <script type="text/javascript" src="PingasPongas.js"></script>
+        <script type="text/javascript">
+            (function() {
+                var instance = void 0;
+
+                function onPageLoad() {
+                    window.removeEventListener("load", onPageLoad);
+                    instance = new pingaspongas.Game("game-container");
+                }
+
+                window.addEventListener("load", onPageLoad);
+            }());
+        </script>
+    </head>
+    <body>
+        <div id="game-container" class="center"></div>
+    </body>
+</html>

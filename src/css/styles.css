@@ -1,0 +1,9 @@
+/* Pingas Pongas Stylesheet */
+.centered-content {
+    display: block;
+    text-align: center;
+}
+
+div.centered-content {
+    vertical-align: middle;
+}
