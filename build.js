@@ -8,6 +8,7 @@ var UglifyJS = require("uglify-js");
 var fs = require("fs");
 
 const OUTPUT_FILE = "./build/PingasPongas.js";
+const OUTPUT_MIN_FILE = "./build/PingasPongas.min.js";
 
 const SOURCES = [
     "./src/js/PingasPongas.js",
@@ -67,10 +68,22 @@ for (var i=0; i<SOURCES.length; ++i) {
     source_files[SOURCES[i]] = fs.readFileSync(SOURCES[i], "utf8");
 }
 
- var result = UglifyJS.minify(source_files, OPTIONS);
+var result = UglifyJS.minify(source_files, {
+    compress: false,
+    mangle: false,
+    output: { beautify: true }
+});
+if (result.error) {
+    console.log(result.error);
+}
+else {
+    fs.writeFileSync(OUTPUT_FILE, result.code, { encoding: "utf8" });
+}
+
+ result = UglifyJS.minify(source_files, OPTIONS);
  if (result.error) {
      console.log(result.error);
  }
  else {
-     fs.writeFileSync(OUTPUT_FILE, result.code, { encoding: "utf8" });
+     fs.writeFileSync(OUTPUT_MIN_FILE, result.code, { encoding: "utf8" });
  }

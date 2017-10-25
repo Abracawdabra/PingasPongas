@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf ./build",
     "prebuild": "npm run clean && bash -c \"mkdir ./build\" && bash -c \"cp -r -t ./build ./src/index.html ./src/css/styles.css\"",
-    "build": "npm run prebuild && node ./minify.js"
+    "build": "npm run prebuild && node ./build.js"
   },
   "dependencies": {
     "uglify-js": "^3.1.5"
