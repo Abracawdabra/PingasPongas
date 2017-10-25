@@ -13,7 +13,14 @@
      * @param {string} parent_id ID of the parent container. If not found, defaults to using document's body
      */
     function Game(parent_id) {
+        // Parent node
         this.parent = document.getElementById(parent_id) || document.body;
+
+        // Textarea for the game
+        this.textArea = null;
+
+        // Screens to draw
+        this._screens = [];
 
         this._init();
     }
@@ -37,15 +44,6 @@
     // Text color of the textarea
     Game.TEXT_COLOR = "#ffffff";
 
-    // Parent node
-    p.parent = null;
-
-    // Textarea for the game
-    p.textArea = null;
-
-    // Screens to draw
-    p._screens = [];
-
     /**
      * Adds a screen to be rendered
      * @param {BaseScreen} screen
@@ -54,7 +52,9 @@
         if (this._screens.indexOf(screen) === -1) {
             this._screens.push(screen);
             screen.parent = this;
-            this.redraw();
+            if (screen.visible) {
+                this.render();
+            }
         }
     };
 
@@ -67,14 +67,16 @@
         if (index > -1) {
             this._screens.splice(index, 1);
             screen.parent = null;
-            this.redraw();
+            if (screen.visible) {
+                this.render();
+            }
         }
     };
 
     /**
-     * Redraws the screen
+     * Renders the screen
      */
-    p.redraw = function() {
+    p.render = function() {
         var display = [];
         var _a = 0;
         for (; _a<Game.SCREEN_HEIGHT; ++_a) {
@@ -85,8 +87,10 @@
         var _b = 0;
         for (_a=0; _a<this._screens.length; ++_a) {
             screen = this._screens[_a];
-            for (_b=0; _b<screen.value.length; ++_b) {
-                display[screen.y] = pingaspongas.utils.strReplace(display[screen.y], screen.value[_b], screen.x, screen.value[_b].length);
+            if (screen.visible) {
+                for (_b=0; _b<screen.value.length; ++_b) {
+                    display[screen.y + _b] = pingaspongas.utils.strReplace(display[screen.y + _b], screen.value[_b], screen.x, screen.value[_b].length);
+                }
             }
         }
 
