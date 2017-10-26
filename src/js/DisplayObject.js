@@ -27,9 +27,25 @@
         this._visible = true;
 
         // Cached display string array
-        this._renderCache = [];
+        this._renderCache = null;
+
+        // Border sides
+        this._border = DisplayObject.Border.NONE;
     }
     var p = DisplayObject.prototype;
+
+    /**
+     * Border bitflags
+     * @enum
+     */
+    DisplayObject.Border = {
+        NONE: 0,
+        LEFT: 1,
+        RIGHT: 2,
+        TOP: 4,
+        BOTTOM: 8,
+        ALL_SIDES: 15
+    };
 
     // Getters/setters
     Object.defineProperties(p, {
@@ -47,7 +63,7 @@
             set: function(value) {
                 this._x = value;
                 if (this._parent && this._visible) {
-                    this.render(true);
+                    this._parent.render(true);
                 }
             }
         },
@@ -56,7 +72,7 @@
             set: function(value) {
                 this._y = value;
                 if (this._parent && this._visible) {
-                    this.render(true);
+                    this._parent.render(true);
                 }
             }
         },
@@ -82,7 +98,7 @@
             get: function() { return this._text },
             set: function(value) {
                 this._text = value;
-                if (this._parent && this.visible) {
+                if (this._parent && this._visible) {
                     this.render(true);
                 }
             }
@@ -96,41 +112,67 @@
                 }
             }
         },
+        border: {
+            get: function() { return this._border; },
+            set: function(value) {
+                this._border = value;
+                if (this._parent && this._visible) {
+                    this.render(true);
+                }
+            }
+        },
         value: { get: function() { return this._renderCache; } }
     });
 
     /**
      * Renders the display object and caches the result
-     * @param {boolean} [redraw_parent] Redraws the parent screen
+     * @param {boolean} [redraw_parent=false] Redraws the parent screen
+     * @param {boolean} [render_border=true] Renders border for this object
      */
-    p.render = function(redraw_parent) {
-        var parent = (this._parent && this._parent instanceof pingaspongas.BaseScreen) ? this._parent : { x: 0, y: 0, width: pingaspongas.Game.SCREEN_WIDTH, height: pingaspongas.Game.SCREEN_HEIGHT };
+    p.render = function(redraw_parent, render_border) {
+        if (render_border === undefined) {
+            render_border = true;
+        }
 
         var split = (this._text !== "") ? this._text.split("\n") : [];
-        var fill_width = void 0;
-        if (this._width) {
-            fill_width = Math.min(this._width, parent.width - this._x);
-        }
-        else {
+        var _a = 0;
+        if (!this._width) {
             var max = 0;
-            for (var _a=0; _a<split.length; ++_a) {
+            for (; _a<split.length; ++_a) {
                 if (split[_a].length > max) {
                     max = split[_a].length;
                 }
             }
             this._width = max;
-            fill_width = Math.min(max, parent.width - this._x);
         }
 
         this._height = this._height || split.length;
-        var fill_height = Math.min(this._height, pingaspongas.Game.SCREEN_HEIGHT - this._y);
         var display = [];
-        for (var _b=0; _b<fill_height; ++_b) {
-            if (_b < split.length) {
-                display.push((split[_b].length > fill_width) ? split[_b].substr(0, fill_width) : pingaspongas.utils.padStringRight(split[_b], fill_width));
+        var line = void 0;
+        for (_a=0; _a<this._height; ++_a) {
+            if (_a < split.length) {
+                line = pingaspongas.utils.padStringRight(split[_a], this._width);
             }
             else {
-                display.push(pingaspongas.utils.padStringLeft("", fill_width));
+                line = pingaspongas.utils.padStringLeft("", this._width);
+            }
+
+            display.push(line);
+        }
+
+        if (render_border) {
+            if ((this._border & DisplayObject.Border.LEFT) || (this._border & DisplayObject.Border.RIGHT)) {
+                for (_a=0; _a<display.length; ++_a) {
+                    display[_a] = this._getBorderStr(_a, true) + display[_a] + this._getBorderStr(_a, false);
+                }
+            }
+
+            if (this._border & DisplayObject.Border.TOP) {
+                display.unshift(this._getBorderStr(-1, true));
+            }
+
+            if (this._border & DisplayObject.Border.BOTTOM) {
+                display.push(this._getBorderStr(this._height, true));
             }
         }
 
@@ -139,6 +181,48 @@
         if (this._parent && redraw_parent) {
             this._parent.render(true);
         }
+    };
+
+    /**
+     * Returns a border string depending on position
+     * @param {number} row Row position
+     * @param {boolean} first_column Is the first column or not
+     * @return {string}
+     */
+    p._getBorderStr = function(row, first_column) {
+        var Border = DisplayObject.Border;
+        if (this._border === Border.NONE) {
+            // Faster for when there's no border
+            return "";
+        }
+
+        var has_left = this._border & Border.LEFT;
+        var has_right = this._border & Border.RIGHT;
+        var value = "";
+        if (row === -1 || row === this._height) {
+            var has_top = row === -1 && (this._border & Border.TOP);
+            var has_top_left_corner = has_top && has_left;
+            var has_top_right_corner = has_top && has_right;
+            var has_bottom = row === this._height && (this._border & Border.BOTTOM);
+            var has_bottom_left_corner = has_bottom && has_left;
+            var has_bottom_right_corner = has_bottom && has_right;
+            if (first_column) {
+                // Top/bottom left border
+                value = (has_top_left_corner || has_bottom_left_corner ? "+" : (has_left ? "|" : ""));
+                if (has_top || has_bottom) {
+                    // Top/bottom border
+                    value += pingaspongas.utils.strRepeat("-", this._width);
+                }
+            }
+
+            // Top/bottom right border
+            value += (has_top_right_corner || has_bottom_right_corner) ? "+" : (has_right ? "|" : "");
+        }
+        else if ((first_column && has_left) || (!first_column && has_right)) {
+            value = "|";
+        }
+
+        return value;
     };
 
     pingaspongas.DisplayObject = DisplayObject;

@@ -85,11 +85,14 @@
 
         var screen = void 0;
         var _b = 0;
+        var limited_width = void 0, limited_height = void 0;
         for (_a=0; _a<this._screens.length; ++_a) {
             screen = this._screens[_a];
+            limited_width = Math.min(screen.value.length > 0 ? screen.value[0].length : 0, Game.SCREEN_WIDTH - screen.x);
+            limited_height = Math.min(screen.value.length, Game.SCREEN_HEIGHT - screen.y);
             if (screen.visible) {
-                for (_b=0; _b<screen.value.length; ++_b) {
-                    display[screen.y + _b] = pingaspongas.utils.strReplace(display[screen.y + _b], screen.value[_b], screen.x, screen.value[_b].length);
+                for (_b=0; _b<limited_height; ++_b) {
+                    display[screen.y + _b] = pingaspongas.utils.strReplace(display[screen.y + _b], screen.value[_b].substr(screen.x > 0 ? 0 : Math.abs(screen.x), limited_width), screen.x, limited_width);
                 }
             }
         }

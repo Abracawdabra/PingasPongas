@@ -49,5 +49,21 @@
         return source.substring(0, start_index) + dest + source.substring(start_index + length);
     };
 
+    /**
+     * Repeats a string a number of times
+     * @param {string} str
+     * @param {number} count
+     * @return {string}
+     */
+    utils.strRepeat = function(str, count) {
+        var value = str;
+        var _a = 1;
+        for (; _a<count; ++_a) {
+            value += str;
+        }
+
+        return value;
+    };
+
     pingaspongas.utils = utils;
 }());
