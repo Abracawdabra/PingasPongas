@@ -75,7 +75,6 @@
                 limited_height = Math.min(child.value.length, this._height - child.y);
                 for (_b=0; _b<limited_height; ++_b) {
                     this._renderCache[child.y + _b] = pingaspongas.utils.strReplace(this._renderCache[child.y + _b], child.value[_b].substr((child.x > 0) ? 0 : Math.abs(child.x), limited_width), child.x, limited_width);
-                    console.log(child.y + _b + " = ", this._renderCache[child.y + _b]);
                 }
             }
         }
