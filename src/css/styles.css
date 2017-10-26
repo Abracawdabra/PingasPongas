@@ -8,7 +8,7 @@ body {
     text-align: center;
 }
 
-.centered-content > textarea {
+.centered-content > pre {
     display: inline-block;
     vertical-align: middle;
 }

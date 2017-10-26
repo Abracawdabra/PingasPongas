@@ -16,8 +16,8 @@
         // Parent node
         this.parent = document.getElementById(parent_id) || document.body;
 
-        // Textarea for the game
-        this.textArea = null;
+        // Preformatted text element for the game
+        this.preElement = null;
 
         // Screens to draw
         this._screens = [];
@@ -97,25 +97,21 @@
             }
         }
 
-        this.textArea.value = display.join("\n");
+        this.preElement.innerHTML = display.join("\n");
     };
 
     // Initializes the screen components
     p._init = function() {
-        var textarea = document.createElement("textarea");
-        textarea.cols = Game.SCREEN_WIDTH;
-        textarea.rows = Game.SCREEN_HEIGHT;
-        textarea.style.fontFamily = Game.FONT_FAMILY;
-        textarea.style.fontSize = Game.FONT_SIZE;
-        textarea.style.backgroundColor = Game.BACKGROUND_COLOR;
-        textarea.style.color = Game.TEXT_COLOR;
-        textarea.style.resize = "none";
-        textarea.style.whiteSpace = "pre";
-        textarea.style.overflow = "hidden";
-        textarea.readOnly = true;
-        textarea.spellcheck = false;
-        this.textArea = textarea;
-        this.parent.appendChild(textarea);
+        var pre = document.createElement("pre");
+        pre.style.backgroundColor = Game.BACKGROUND_COLOR;
+        pre.style.color = Game.TEXT_COLOR;
+        pre.style.fontFamily = Game.FONT_FAMILY;
+        pre.style.fontSize = Game.FONT_SIZE;
+        pre.style.border = "0";
+        pre.style.margin = "0";
+        pre.style.padding = "0";
+        this.preElement = pre;
+        this.parent.appendChild(pre);
     };
 
     pingaspongas.Game = Game;
