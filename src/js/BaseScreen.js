@@ -17,6 +17,11 @@
      */
     function BaseScreen(x, y, width, height) {
         pingaspongas.DisplayObject.call(this, x, y, "", width || pingaspongas.Game.SCREEN_WIDTH, height || pingaspongas.Game.SCREEN_HEIGHT);
+
+        // Updated when components change
+        this.needsRedraw = false;
+
+        // Components
         this._children = [];
     }
     pingaspongas.inherit(BaseScreen, pingaspongas.DisplayObject);
@@ -31,7 +36,7 @@
             this._children.push(child);
             child.parent = this;
             if (child.visible) {
-                this.render(true);
+                this.render();
             }
         }
     };
@@ -46,24 +51,47 @@
             this._children.splice(index, 1);
             child.parent = null;
             if (child.visible) {
-                this.render(true);
+                this.render();
             }
+        }
+    };
+
+    /**
+     * Event for when a key's state changes to down
+     * @param {number} key_code
+     */
+    p.keyChangeDown = function(key_code) {
+    };
+
+    /**
+     * Event for when a key's state changes to up
+     * @param {number} key_code
+     */
+    p.keyChangeUp = function(key_code) {
+    };
+
+    /**
+     * Update logic
+     * @param {number} delta
+     */
+    p.update = function(delta) {
+        if (this.needsRedraw) {
+            this.render(true);
         }
     };
 
     /**
      * Redraws the screen
      * @override
-     * @param {boolean} [redraw_parent] Redraws the parent
      * @param {boolean} [render_border=true] Renders border if it has one
      */
-    p.render = function(redraw_parent, render_border) {
+    p.render = function(render_border) {
         if (render_border === undefined) {
             render_border = true;
         }
 
         // Have to handle borders within this method
-        pingaspongas.DisplayObject.prototype.render.call(this, false, false);
+        pingaspongas.DisplayObject.prototype.render.call(this, false);
 
         var child = void 0;
         var limited_width = void 0, limited_height = void 0;
@@ -100,8 +128,10 @@
             }
         }
 
-        if (this._parent && redraw_parent) {
-            this._parent.render(true);
+        this.needsRedraw = false;
+
+        if (this._parent && !this._parent.needsRedraw) {
+            this._parent.needsRedraw = true;
         }
     };
 

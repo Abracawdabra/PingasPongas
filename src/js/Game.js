@@ -19,6 +19,21 @@
         // Preformatted text element for the game
         this.preElement = null;
 
+        // Updated when screens change
+        this.needsRedraw = false;
+
+        // FPS converted to a millisecond interval
+        this._tickInterval = 1000 / Game.FPS;
+
+        // Current timeout ID
+        this._timeoutID = 0;
+
+        // Timestamp of the last timer tick
+        this._lastTickTime = 0;
+
+        // FPS stat
+        this._currentFPS = 0;
+
         // Screens to draw
         this._screens = [];
 
@@ -43,6 +58,16 @@
 
     // Text color of the textarea
     Game.TEXT_COLOR = "#ffffff";
+
+    // Desired frames per second
+    Game.FPS = 25;
+
+    /**
+     * Getters/setters
+     */
+    Object.defineProperties(p, {
+        currentFPS: { get: function() { return this._currentFPS; } }
+    });
 
     /**
      * Adds a screen to be rendered
@@ -102,6 +127,7 @@
         }
 
         this.preElement.innerHTML = display.join("\n");
+        this.needsRedraw = false;
     };
 
     // Initializes the screen components
@@ -116,6 +142,56 @@
         pre.style.padding = "0";
         this.preElement = pre;
         this.parent.appendChild(pre);
+
+        this._onKeyDown = this._onKeyDown.bind(this);
+        this._onKeyUp = this._onKeyUp.bind(this);
+        this._onTick = this._onTick.bind(this);
+
+        window.addEventListener("keydown", this._onKeyDown);
+        window.addEventListener("keyup", this._onKeyUp);
+
+        this._lastTickTime = pingaspongas.utils.getTime();
+        this._timeoutID = setTimeout(this._onTick);
+    };
+
+    /**
+     * Timer tick event handler
+     */
+    p._onTick = function(e) {
+        var t = pingaspongas.utils.getTime();
+        var delta = t - this._lastTickTime;
+        this._currentFPS = 1000/delta;
+        this._update(delta);
+        this._lastTickTime = pingaspongas.utils.getTime();
+        this._timeoutID = setTimeout(this._onTick, this._tickInterval - (pingaspongas.utils.getTime() - t));
+    };
+    /**
+     * Key down event handler
+     * @param {Event} e
+     */
+    p._onKeyDown = function(e) {
+    };
+
+    /**
+     * Key up event handler
+     * @param {Event} e
+     */
+    p._onKeyUp = function(e) {
+    };
+
+    /**
+     * Update logic
+     * @param {number} delta
+     */
+    p._update = function(delta) {
+        var _a = 0;
+        for (; _a<this._screens.length; ++_a) {
+            this._screens[_a].update(delta);
+        }
+
+        if (this.needsRedraw) {
+            this.render();
+        }
     };
 
     pingaspongas.Game = Game;

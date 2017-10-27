@@ -10,6 +10,12 @@
     var utils = {};
 
     /**
+     * Gets time in milliseconds
+     * @return {number}
+     */
+    utils.getTime = (window.performance && window.performance.now) ? window.performance.now.bind(window.performance) : Date.now || function() { return new Date().getTime(); };
+
+    /**
      * Pads a string with heading spaces until it meets a certain length
      * @param {string} text
      * @param {number} width
@@ -93,8 +99,6 @@
             height: rect.bottom - rect.top
         };
     };
-
-
 
     pingaspongas.utils = utils;
 }());

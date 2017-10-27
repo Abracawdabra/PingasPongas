@@ -62,8 +62,8 @@
             get: function() { return this._x; },
             set: function(value) {
                 this._x = value;
-                if (this._parent && this._visible) {
-                    this._parent.render(true);
+                if (this._parent && this._visible && !this._parent.needsRedraw) {
+                    this._parent.needsRedraw = true;
                 }
             }
         },
@@ -71,8 +71,8 @@
             get: function() { return this._y; },
             set: function(value) {
                 this._y = value;
-                if (this._parent && this._visible) {
-                    this._parent.render(true);
+                if (this._parent && this._visible && !this._parent.needsRedraw) {
+                    this._parent.needsRedraw = true;
                 }
             }
         },
@@ -81,7 +81,7 @@
             set: function(value) {
                 this._width = value;
                 if (this._parent && this._visible) {
-                    this.render(true);
+                    this.render();
                 }
             }
         },
@@ -90,7 +90,7 @@
             set: function(value) {
                 this._height = value;
                 if (this._parent && this._visible) {
-                    this.render(true);
+                    this.render();
                 }
             }
         },
@@ -99,7 +99,7 @@
             set: function(value) {
                 this._text = value;
                 if (this._parent && this._visible) {
-                    this.render(true);
+                    this.render();
                 }
             }
         },
@@ -107,8 +107,8 @@
             get: function() { return this._visible; },
             set: function(value) {
                 this._visible = value;
-                if (this._parent) {
-                    this._parent.render(true);
+                if (this._parent && !this._parent.needsRedraw) {
+                    this._parent.needsRedraw = true;
                 }
             }
         },
@@ -117,7 +117,7 @@
             set: function(value) {
                 this._border = value;
                 if (this._parent && this._visible) {
-                    this.render(true);
+                    this.render();
                 }
             }
         },
@@ -126,10 +126,9 @@
 
     /**
      * Renders the display object and caches the result
-     * @param {boolean} [redraw_parent=false] Redraws the parent screen
      * @param {boolean} [render_border=true] Renders border for this object
      */
-    p.render = function(redraw_parent, render_border) {
+    p.render = function(render_border) {
         if (render_border === undefined) {
             render_border = true;
         }
@@ -178,8 +177,8 @@
 
         this._renderCache = display;
 
-        if (this._parent && redraw_parent) {
-            this._parent.render(true);
+        if (this._parent && !this._parent.needsRedraw) {
+            this._parent.needsRedraw = true;
         }
     };
 
