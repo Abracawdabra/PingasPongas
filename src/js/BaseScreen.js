@@ -67,14 +67,18 @@
 
         var child = void 0;
         var limited_width = void 0, limited_height = void 0;
+        var child_start_index = void 0;
+        var child_y_index_offset = void 0;
         var _a = 0, _b = void 0;
         for (; _a<this._children.length; ++_a) {
             child = this._children[_a];
             if (child.visible) {
-                limited_width = Math.min(child.value.length > 0 ? child.value[0].length : 0, this._width - child.x);
-                limited_height = Math.min(child.value.length, this._height - child.y);
+                limited_width = Math.min((child.value.length > -1) ? child.value[0].length : 0, this._width - child.x);
+                limited_height = Math.min((child.y > -1) ? child.value.length : child.y + child.value.length, this._height - child.y);
+                child_start_index = (child.y > -1) ? child.y : 0;
+                child_y_index_offset = (child.y > -1) ? 0 : Math.abs(child.y);
                 for (_b=0; _b<limited_height; ++_b) {
-                    this._renderCache[child.y + _b] = pingaspongas.utils.strReplace(this._renderCache[child.y + _b], child.value[_b].substr((child.x > 0) ? 0 : Math.abs(child.x), limited_width), child.x, limited_width);
+                    this._renderCache[child_start_index + _b] = pingaspongas.utils.strReplace(this._renderCache[child_start_index  + _b], child.value[_b + child_y_index_offset].substr((child.x > -1) ? 0 : Math.abs(child.x), limited_width), child.x, limited_width);
                 }
             }
         }
