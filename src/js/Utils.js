@@ -1,5 +1,5 @@
 /**
- * Game
+ * Utilities
  * @author Cawdabra
  * @license MIT
  */
@@ -16,6 +16,27 @@
     utils.getTime = (window.performance && window.performance.now) ? window.performance.now.bind(window.performance) : Date.now || function() { return new Date().getTime(); };
 
     /**
+     * Returns a key code given a keyboard event
+     * @param {KeyboardEvent} e
+     * @return {number}
+     */
+    utils.getKeyCode = function(e) {
+        var identifier = e.key || e.keyIdentifier;
+        if (identifier) {
+            identifier = identifier.toUpperCase();
+            if (identifier in pingaspongas.KeyboardKey) {
+                return pingaspongas.KeyboardKey[identifier];
+            }
+        }
+        else if (e.keyCode) {
+            return e.keyCode;
+        }
+
+        // No code for this identifier
+        return 0;
+    };
+
+    /**
      * Pads a string with heading spaces until it meets a certain length
      * @param {string} text
      * @param {number} width
@@ -23,7 +44,7 @@
      */
     utils.padStringLeft = function(text, width) {
         while (text.length < width) {
-            text += " ";
+            text = " " + text;
         }
 
         return text;
@@ -37,7 +58,7 @@
      */
     utils.padStringRight = function(text, width) {
         while (text.length < width) {
-            text = " " + text;
+            text += " ";
         }
 
         return text;
@@ -69,6 +90,33 @@
         }
 
         return value;
+    };
+
+    /**
+     * Returns the horizontal center of an object in accordance to another object
+     * @param {IRect} obj1 Object to be centered
+     * @param {IRect} obj2
+     * @return {number}
+     */
+    utils.getCenteredX = function(obj1, obj2) {
+        return obj2.x + Math.floor(obj2.width / 2) - Math.floor(obj1.width / 2);
+    };
+
+    /**
+     * Returns the Vertical center an object in accordance to another object
+     * @param {IRect} obj1 Object to be centered
+     * @param {IRect} obj2
+     * @return {number}
+     */
+    utils.getCenteredY = function(obj1, obj2) {
+        return obj2.y + Math.floor(obj2.height / 2) - Math.floor(obj1.height / 2);
+    };
+
+    /**
+     * Returns a number between a range
+     */
+    utils.getRandBetween = function(min, max) {
+        return Math.floor((Math.random() * (max - min)) + min);
     };
 
     /**

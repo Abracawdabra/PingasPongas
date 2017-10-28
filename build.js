@@ -12,9 +12,11 @@ const OUTPUT_MIN_FILE = "./build/PingasPongas.min.js";
 
 const SOURCES = [
     "./src/js/PingasPongas.js",
+    "./src/js/KeyboardKey.js",
     "./src/js/Utils.js",
     "./src/js/DisplayObject.js",
     "./src/js/BaseScreen.js",
+    "./src/js/TitleScreen.js",
     "./src/js/LevelScreen.js",
     "./src/js/Game.js"
 ];

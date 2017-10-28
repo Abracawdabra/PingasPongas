@@ -37,6 +37,9 @@
         // Screens to draw
         this._screens = [];
 
+        // List of key codes that are currently down
+        this._keysDown = [];
+
         this._init();
     }
     var p = Game.prototype;
@@ -150,6 +153,8 @@
         window.addEventListener("keydown", this._onKeyDown);
         window.addEventListener("keyup", this._onKeyUp);
 
+        this.addScreen(new pingaspongas.TitleScreen());
+
         this._lastTickTime = pingaspongas.utils.getTime();
         this._timeoutID = setTimeout(this._onTick);
     };
@@ -170,6 +175,11 @@
      * @param {Event} e
      */
     p._onKeyDown = function(e) {
+        var key_code = pingaspongas.utils.getKeyCode(e);
+        if (this._screens.length > 0 && this._keysDown.indexOf(key_code) === -1) {
+            this._screens[this._screens.length - 1].onKeyChangeDown(key_code);
+            this._keysDown.push(key_code);
+        }
     };
 
     /**
@@ -177,6 +187,14 @@
      * @param {Event} e
      */
     p._onKeyUp = function(e) {
+        var key_code = pingaspongas.utils.getKeyCode(e);
+        if (this._screens.length > 0) {
+            this._screens[this._screens.length - 1].onKeyChangeUp(key_code);
+            var index = this._keysDown.indexOf(key_code);
+            if (index > -1) {
+                this._keysDown.splice(index, 1);
+            }
+        }
     };
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Game
+ * Display Object
  * @author Cawdabra
  * @license MIT
  */
@@ -31,6 +31,10 @@
 
         // Border sides
         this._border = DisplayObject.Border.NONE;
+
+        if (this._text) {
+            this.render();
+        }
     }
     var p = DisplayObject.prototype;
 
@@ -59,7 +63,7 @@
             }
         },
         x: {
-            get: function() { return this._x; },
+            get: function() { return Math.floor(this._x); },
             set: function(value) {
                 this._x = value;
                 if (this._parent && this._visible && !this._parent.needsRedraw) {
@@ -67,8 +71,10 @@
                 }
             }
         },
+        realX: { get: function() { return this._x; } },
+        realY: { get: function() { return this._y; } },
         y: {
-            get: function() { return this._y; },
+            get: function() { return Math.floor(this._y); },
             set: function(value) {
                 this._y = value;
                 if (this._parent && this._visible && !this._parent.needsRedraw) {

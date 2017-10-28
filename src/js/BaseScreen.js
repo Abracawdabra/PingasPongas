@@ -1,5 +1,5 @@
 /**
- * Game
+ * Base Screen
  * @author Cawdabra
  * @license MIT
  */
@@ -42,6 +42,21 @@
     };
 
     /**
+     * Adds a child object at a specified index
+     * @param {DisplayObject} child
+     * @param {number} index
+     */
+    p.addChildAt = function(child, index) {
+        this.removeChild(child);
+        index = Math.max(Math.min(index, this._children.length), 0);
+        this._children = this._children.slice(0, index).concat([child]).concat(this._children.slice(index));
+        child.parent = this;
+        if (child.visible) {
+            this.render();
+        }
+    };
+
+    /**
      * Removes a child object from the screen
      * @param {DisplayObject} child
      */
@@ -57,17 +72,32 @@
     };
 
     /**
+     * Removes a child object at a specified index
+     * @param {number} index
+     */
+    p.removeChildAt = function(index) {
+        if (index > -1 && index < this._children.length) {
+            var child = this._children[index];
+            this._children.splice(index, 1);
+            child.parent = null;
+            if (child.visible) {
+                this.render();
+            }
+        }
+    };
+
+    /**
      * Event for when a key's state changes to down
      * @param {number} key_code
      */
-    p.keyChangeDown = function(key_code) {
+    p.onKeyChangeDown = function(key_code) {
     };
 
     /**
      * Event for when a key's state changes to up
      * @param {number} key_code
      */
-    p.keyChangeUp = function(key_code) {
+    p.onKeyChangeUp = function(key_code) {
     };
 
     /**
