@@ -14,4 +14,7 @@
         "ARROWDOWN": 40,
         "ENTER": 13
     };
+
+    // Keys to prevent from effecting the page
+    pingaspongas.PreventableKeys = [37, 39, 38, 40, 32];
 }());

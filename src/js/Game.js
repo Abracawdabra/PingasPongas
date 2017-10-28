@@ -179,6 +179,9 @@
         if (this._screens.length > 0 && this._keysDown.indexOf(key_code) === -1) {
             this._screens[this._screens.length - 1].onKeyChangeDown(key_code);
             this._keysDown.push(key_code);
+            if (pingaspongas.PreventableKeys.indexOf(key_code) > -1) {
+                e.preventDefault();
+            }
         }
     };
 
