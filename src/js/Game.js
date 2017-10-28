@@ -133,6 +133,28 @@
         this.needsRedraw = false;
     };
 
+    p.showTitleScreen = function() {
+        this._screens = [];
+        this.addScreen(new pingaspongas.TitleScreen());
+    };
+
+    p.startSinglePlayerGame = function() {
+        this._screens = [];
+        this.addScreen(new pingaspongas.LevelScreen());
+    };
+
+    p.startMultiplayerGame = function() {
+        this._screens = [];
+        this.addScreen(new pingaspongas.LevelScreen(true));
+    };
+
+    p.showInstructionsScreen = function() {
+        var s = new pingaspongas.InstructionsScreen();
+        s.x = Math.floor(Game.SCREEN_WIDTH / 2) - Math.floor(s.width / 2);
+        s.y = Math.floor(Game.SCREEN_HEIGHT / 2) - Math.floor(s.height / 2);
+        this.addScreen(s);
+    };
+
     // Initializes the screen components
     p._init = function() {
         var pre = document.createElement("pre");
@@ -153,7 +175,7 @@
         window.addEventListener("keydown", this._onKeyDown);
         window.addEventListener("keyup", this._onKeyUp);
 
-        this.addScreen(new pingaspongas.TitleScreen());
+        this.showTitleScreen();
 
         this._lastTickTime = pingaspongas.utils.getTime();
         this._timeoutID = setTimeout(this._onTick);

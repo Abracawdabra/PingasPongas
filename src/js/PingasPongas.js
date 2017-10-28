@@ -19,4 +19,14 @@ var pingaspongas = this.pingaspongas = {};
         child.prototype = Object.create(parent.prototype);
         return child.prototype;
     };
+
+    /**
+     * Directions
+     * @enum
+     */
+    pingaspongas.Direction = {
+        NONE: 0,
+        LEFT: 1,
+        RIGHT: 2
+    };
 }());

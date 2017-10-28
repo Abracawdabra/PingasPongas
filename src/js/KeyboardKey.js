@@ -5,6 +5,8 @@
  */
 
 (function() {
+    "use strict";
+
     pingaspongas.KeyboardKey = {
         "A": 65,
         "D": 68,

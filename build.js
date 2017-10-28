@@ -15,8 +15,11 @@ const SOURCES = [
     "./src/js/KeyboardKey.js",
     "./src/js/Utils.js",
     "./src/js/DisplayObject.js",
+    "./src/js/Ball.js",
+    "./src/js/Paddle.js",
     "./src/js/BaseScreen.js",
     "./src/js/TitleScreen.js",
+    "./src/js/InstructionsScreen.js",
     "./src/js/LevelScreen.js",
     "./src/js/Game.js"
 ];

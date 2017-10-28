@@ -5,14 +5,17 @@
  */
 
 (function() {
+    "use strict";
+
     var utils = pingaspongas.utils;
     var BaseScreen = pingaspongas.BaseScreen;
     var DisplayObject = pingaspongas.DisplayObject;
     var KeyboardKey = pingaspongas.KeyboardKey;
 
     var MenuItem = {
-        START_GAME: 1,
-        INSTRUCTIONS: 2
+        SINGLE_PLAYER: 1,
+        MULTIPLAYER: 2,
+        INSTRUCTIONS: 3
     };
 
     // Min interval range for creating sperm (milliseconds)
@@ -27,7 +30,8 @@
         BaseScreen.call(this, 0, 0, pingaspongas.Game.SCREEN_WIDTH, pingaspongas.Game.SCREEN_HEIGHT);
 
         this._txtTitle = null;
-        this._txtStartGame = null;
+        this._txtSinglePlayer = null;
+        this._txtMultiplayer = null;
         this._txtInstructions = null;
         this._txtSelectMarker = null;
 
@@ -37,7 +41,7 @@
         this._selectedMenuItem = 0;
 
         this._initUI();
-        this._selectMenuItem(MenuItem.START_GAME);
+        this._selectMenuItem(MenuItem.SINGLE_PLAYER);
         this._createSperm();
     };
     var p = pingaspongas.inherit(TitleScreen, BaseScreen);
@@ -54,6 +58,18 @@
                 break;
             case KeyboardKey["ARROWDOWN"]:
                 this._selectMenuItem(this._selectedMenuItem + 1);
+                break;
+            case KeyboardKey["ENTER"]:
+                switch (this._selectedMenuItem) {
+                    case MenuItem.SINGLE_PLAYER:
+                        this._parent.startSinglePlayerGame();
+                        break;
+                    case MenuItem.MULTIPLAYER:
+                        this._parent.startMultiplayerGame();
+                        break;
+                    case MenuItem.INSTRUCTIONS:
+                        this._parent.showInstructionsScreen();
+                }
         }
     };
 
@@ -84,8 +100,10 @@
     };
 
     p._initUI = function() {
+        // I used http://patorjk.com/software/taag/#p=display&f=Modular&t=Pingas%20Pongas
+        // to generate this.
         var txt_title = new DisplayObject(0, 0,
-        "  _______  ___  __    _  _______  _______  _______  \n" +
+        "   _______  ___  __    _  _______  _______  _______ \n" +
         "  |       ||   ||  |  | ||       ||   _   ||       |\n" +
         "  |    _  ||   ||   |_| ||    ___||  |_|  ||  _____|\n" +
         "  |   |_| ||   ||       ||   | __ |       || |_____ \n" +
@@ -105,15 +123,21 @@
         this.addChild(txt_title);
         this._txtTitle = txt_title;
 
-        var txt_start = new DisplayObject(0, 0, "Start Game");
-        txt_start.x = utils.getCenteredX(txt_start, this);
-        txt_start.y = txt_title.x + txt_title.height + 1;
-        this.addChild(txt_start);
-        this._txtStartGame = txt_start;
+        var txt_sp = new DisplayObject(0, 0, "1 Player");
+        txt_sp.x = utils.getCenteredX(txt_sp, this);
+        txt_sp.y = txt_title.y + txt_title.height + 3;
+        this.addChild(txt_sp);
+        this._txtSinglePlayer = txt_sp;
+
+        var txt_mp = new DisplayObject(0, 0, "2 Player");
+        txt_mp.x = utils.getCenteredX(txt_mp, this);
+        txt_mp.y = txt_sp.y + txt_sp.height;
+        this.addChild(txt_mp);
+        this._txtMultiplayer = txt_mp;
 
         var txt_instructions = new DisplayObject(0, 0, "Instructions");
         txt_instructions.x = utils.getCenteredX(txt_instructions, this);
-        txt_instructions.y = txt_start.y + txt_start.height;
+        txt_instructions.y = txt_mp.y + txt_mp.height;
         this.addChild(txt_instructions);
         this._txtInstructions = txt_instructions;
 
@@ -128,7 +152,8 @@
      */
     p._selectMenuItem = function(item) {
         var items = [
-            this._txtStartGame,
+            this._txtSinglePlayer,
+            this._txtMultiplayer,
             this._txtInstructions
         ];
 
