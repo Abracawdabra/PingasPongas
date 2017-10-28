@@ -33,7 +33,8 @@
         this._txtSinglePlayer = null;
         this._txtMultiplayer = null;
         this._txtInstructions = null;
-        this._txtSelectMarker = null;
+        this._txtLeftSelectMarker = null;
+        this._txtRightSelectMarker = null;
 
         this._spermList = [];
         this._spermCreateTime = 0;
@@ -141,9 +142,13 @@
         this.addChild(txt_instructions);
         this._txtInstructions = txt_instructions;
 
-        var txt_select = new DisplayObject(0, 0, ">");
-        this.addChild(txt_select);
-        this._txtSelectMarker = txt_select;
+        var txt_left_marker = new DisplayObject(0, 0, ">");
+        this.addChild(txt_left_marker);
+        this._txtLeftSelectMarker = txt_left_marker;
+
+        var txt_right_marker = new DisplayObject(0, 0, "<");
+        this.addChild(txt_right_marker);
+        this._txtRightSelectMarker = txt_right_marker;
     };
 
     /**
@@ -159,8 +164,10 @@
 
         if (item > 0 && item <= items.length) {
             var item_obj = items[item - 1];
-            this._txtSelectMarker.x = item_obj.x - this._txtSelectMarker.width - 1;
-            this._txtSelectMarker.y = item_obj.y;
+            this._txtLeftSelectMarker.x = item_obj.x - this._txtLeftSelectMarker.width - 1;
+            this._txtLeftSelectMarker.y = item_obj.y;
+            this._txtRightSelectMarker.x = item_obj.x + item_obj.width + 1;
+            this._txtRightSelectMarker.y = item_obj.y;
             this._selectedMenuItem = item;
         }
     };

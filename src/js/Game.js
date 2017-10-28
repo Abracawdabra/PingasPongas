@@ -129,7 +129,7 @@
             }
         }
 
-        this.preElement.innerHTML = display.join("\n");
+        this.preElement.innerText = display.join("\n");
         this.needsRedraw = false;
     };
 
@@ -140,12 +140,12 @@
 
     p.startSinglePlayerGame = function() {
         this._screens = [];
-        this.addScreen(new pingaspongas.LevelScreen());
+        this.addScreen(new pingaspongas.GameScreen());
     };
 
     p.startMultiplayerGame = function() {
         this._screens = [];
-        this.addScreen(new pingaspongas.LevelScreen(true));
+        this.addScreen(new pingaspongas.GameScreen(true));
     };
 
     p.showInstructionsScreen = function() {
@@ -157,6 +157,8 @@
 
     // Initializes the screen components
     p._init = function() {
+        var font_pixel_size = pingaspongas.utils.getFontPixelSize(Game.FONT_FAMILY, Game.FONT_SIZE);
+
         var pre = document.createElement("pre");
         pre.style.backgroundColor = Game.BACKGROUND_COLOR;
         pre.style.color = Game.TEXT_COLOR;
@@ -165,6 +167,10 @@
         pre.style.border = "0";
         pre.style.margin = "0";
         pre.style.padding = "0";
+        pre.style.width = (font_pixel_size.width * Game.SCREEN_WIDTH) + "px";
+        pre.style.height = (font_pixel_size.height * Game.SCREEN_HEIGHT) + "px";
+        pre.style.maxWidth = pre.style.width;
+        pre.style.maxHeight = pre.style.height;
         this.preElement = pre;
         this.parent.appendChild(pre);
 
