@@ -14,7 +14,13 @@
         "ARROWRIGHT": 39,
         "ARROWUP": 38,
         "ARROWDOWN": 40,
-        "ENTER": 13
+        "ENTER": 13,
+
+        // Internet Explorer and Firefox 36 and earlier compatibility
+        "LEFT": 37,
+        "RIGHT": 39,
+        "UP": 38,
+        "DOWN": 40
     };
 
     // Keys to prevent from effecting the page
