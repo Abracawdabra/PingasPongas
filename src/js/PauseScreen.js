@@ -12,7 +12,8 @@
 
     var MenuItem = {
         RESUME: 1,
-        QUIT: 2
+        INSTRUCTIONS: 2,
+        QUIT: 3
     };
 
     /**
@@ -21,13 +22,14 @@
      * @param {GameScreen} game_screen
      */
     var PauseScreen = function(game_screen) {
-        pingaspongas.BaseScreen.call(this, 0, 0, 24, 4);
+        pingaspongas.BaseScreen.call(this, 0, 0, 23, 5);
         this._border = DisplayObject.Border.ALL_SIDES;
 
         // Used to reference the game screen that created this screen
         this._gameScreen = game_screen;
 
         this._txtResume = null;
+        this._txtInstructions = null;
         this._txtQuit = null;
         this._txtLeftSelectMarker = null;
         this._txtRightSelectMarker = null;
@@ -59,6 +61,9 @@
                         this._gameScreen.paused = false;
                         this._parent.removeScreen(this);
                         break;
+                    case MenuItem.INSTRUCTIONS:
+                        this._parent.showInstructionsScreen();
+                        break;
                     case MenuItem.QUIT:
                         this._parent.showTitleScreen();
                 }
@@ -74,7 +79,12 @@
         this.addChild(txt_resume);
         this._txtResume = txt_resume;
 
-        var txt_quit = new DisplayObject(0, txt_resume.y + 1, "Quit");
+        var txt_instructions = new DisplayObject(0, txt_resume.y + 1, "Instructions");
+        txt_instructions.x = pingaspongas.utils.getCenteredX(txt_instructions, this);
+        this.addChild(txt_instructions);
+        this._txtInstructions = txt_instructions;
+
+        var txt_quit = new DisplayObject(0, txt_instructions.y + 1, "Quit");
         txt_quit.x = pingaspongas.utils.getCenteredX(txt_quit, this);
         this.addChild(txt_quit);
         this._txtQuit = txt_quit;
@@ -95,6 +105,7 @@
     p._selectMenuItem = function(item) {
         var items = [
             this._txtResume,
+            this._txtInstructions,
             this._txtQuit
         ];
 

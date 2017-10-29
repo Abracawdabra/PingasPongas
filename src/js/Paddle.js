@@ -14,13 +14,13 @@
         this.speed = 0;
 
         // Direction the paddle is moving
-        this.direction = Direction.NONE;
+        this.direction = pingaspongas.Direction.NONE;
 
         this.width = length;
     };
     var p = pingaspongas.inherit(Paddle, pingaspongas.DisplayObject);
 
-    Paddle.MAX_SIZE = 10;
+    Paddle.MAX_LENGTH = 26;
 
     // Getters/setters
     Object.defineProperties(p, {
@@ -28,7 +28,7 @@
         width: {
             get: function() { return this._width; },
             set: function(value) {
-                this._width = Math.max(Math.min(value, Paddle.MAX_SIZE), 0);
+                this._width = Math.max(Math.min(value, Paddle.MAX_LENGTH), 0);
                 this.text = "8" + pingaspongas.utils.strRepeat("=", this._width) + "D";
             }
         }

@@ -32,12 +32,14 @@
             set: function(value) {
                 this._direction = value;
                 if (value === Direction.LEFT) {
-                    this.text = "o~";
+                    this.text = "O~";
                 }
                 else {
-                    this.text = "~o";
+                    this.text = "~O";
                 }
             }
         }
     });
+
+    pingaspongas.Ball = Ball;
 }());

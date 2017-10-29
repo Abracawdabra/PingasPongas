@@ -11,4 +11,5 @@ body {
 .centered-content > pre {
     display: inline-block;
     vertical-align: middle;
+    text-align: left;
 }
