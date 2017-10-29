@@ -29,6 +29,12 @@
         // Round number for display purposes
         this._roundNum = 0;
 
+        // Player one score
+        this._playerOneScore = 0;
+
+        // Player two/CPU score
+        this._playerTwoScore = 0;
+
         // How many points until the game ends
         this._pointsGoal = points_goal;
 
@@ -44,6 +50,11 @@
         this._topPaddle = null;
         this._bottomPaddle = null;
         this._ball = null;
+
+        this._sidePanel = null;
+        this._txtRound = null;
+        this._txtPlayerOneScore = null;
+        this._txtPlayerTwoScore = null;
 
         this._initUI();
         this._setupRound();
@@ -127,7 +138,7 @@
      * UI initialization
      */
     p._initUI = function() {
-        var middle_line = new pingaspongas.DisplayObject(0, 0, utils.strRepeat("-", GameScreen.TABLE_WIDTH));
+        var middle_line = new DisplayObject(0, 0, utils.strRepeat("-", GameScreen.TABLE_WIDTH));
         middle_line.y = utils.getCenteredY(middle_line, this);
         this.addChild(middle_line);
 
@@ -142,6 +153,48 @@
         var ball = new pingaspongas.Ball(0, 0);
         this.addChild(ball);
         this._ball = ball;
+
+        var side_panel = new DisplayObject(this._tableBounds.x + this._tableBounds.width, 0, "", this._width - this._tableBounds.width - 1, this._height);
+        side_panel.border = DisplayObject.Border.LEFT;
+        this.addChild(side_panel);
+        this._sidePanel = side_panel;
+
+        var txt_round_label = new DisplayObject(0, 5, "ROUND");
+        txt_round_label.x = utils.getCenteredX(txt_round_label, side_panel) + 1;
+        this.addChild(txt_round_label);
+
+        this._txtRound = new DisplayObject(0, txt_round_label.y + 1, "");
+        this.addChild(this._txtRound);
+
+        var txt_player_one_label = new DisplayObject(0, this._txtRound.y + 5, "PLAYER 1");
+        txt_player_one_label.x = utils.getCenteredX(txt_player_one_label, side_panel) + 1;
+        this.addChild(txt_player_one_label);
+
+        this._txtPlayerOneScore = new DisplayObject(0, txt_player_one_label.y + 1, "");
+        this.addChild(this._txtPlayerOneScore);
+
+        var txt_player_two_label = new DisplayObject(0, this._txtPlayerOneScore.y + 5, this._multiplayer ? "PLAYER 2" : "CPU");
+        txt_player_two_label.x = utils.getCenteredX(txt_player_two_label, side_panel) + 1;
+        this.addChild(txt_player_two_label);
+
+        this._txtPlayerTwoScore = new DisplayObject(0, txt_player_two_label.y + 1, "");
+        this.addChild(this._txtPlayerTwoScore);
+
+        this._updatePlayerScores();
+    };
+
+    /**
+     * Updates the scores text
+     */
+    p._updatePlayerScores = function() {
+        var points_goal = isFinite(this._pointsGoal) ? this._pointsGoal.toString() : "∞";
+        this._txtPlayerOneScore.text = this._playerOneScore + "/" + points_goal;
+        this._txtPlayerOneScore.width = this._txtPlayerOneScore.text.length;
+        this._txtPlayerOneScore.x = utils.getCenteredX(this._txtPlayerOneScore, this._sidePanel) + 1;
+
+        this._txtPlayerTwoScore.text = this._playerTwoScore + "/" + points_goal;
+        this._txtPlayerTwoScore.width = this._txtPlayerTwoScore.text.length;
+        this._txtPlayerTwoScore.x = utils.getCenteredX(this._txtPlayerTwoScore, this._sidePanel) + 1;
     };
 
     /**
@@ -155,6 +208,10 @@
 
         this._ball.x = utils.getCenteredX(this._ball, this._tableBounds);
         this._ball.y = utils.getCenteredY(this._ball, this._tableBounds);
+
+        this._txtRound.text = ++this._roundNum;
+        this._txtRound.width = this._txtRound.text.length;
+        this._txtRound.x = utils.getCenteredX(this._txtRound, this._sidePanel) + 1;
     };
 
     pingaspongas.GameScreen = GameScreen;

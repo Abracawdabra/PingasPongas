@@ -103,7 +103,7 @@
         text: {
             get: function() { return this._text },
             set: function(value) {
-                this._text = value;
+                this._text = value.toString();
                 if (this._parent && this._visible) {
                     this.render();
                 }

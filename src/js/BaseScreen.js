@@ -131,7 +131,7 @@
         for (; _a<this._children.length; ++_a) {
             child = this._children[_a];
             if (child.visible) {
-                limited_width = Math.min((child.value.length > -1) ? child.value[0].length : 0, this._width - child.x);
+                limited_width = Math.min((child.value.length > 0) ? child.value[0].length : 0, this._width - child.x);
                 limited_height = Math.min((child.y > -1) ? child.value.length : child.y + child.value.length, this._height - child.y);
                 child_start_index = (child.y > -1) ? child.y : 0;
                 child_y_index_offset = (child.y > -1) ? 0 : Math.abs(child.y);

@@ -118,7 +118,7 @@
         var screen_y_index_offset = void 0;
         for (_a=0; _a<this._screens.length; ++_a) {
             screen = this._screens[_a];
-            limited_width = Math.min((screen.value.length > -1) ? screen.value[0].length : 0, Game.SCREEN_WIDTH - screen.x);
+            limited_width = Math.min((screen.value.length > 0) ? screen.value[0].length : 0, Game.SCREEN_WIDTH - screen.x);
             limited_height = Math.min((screen.y > -1) ? screen.value.length : screen.y + screen.value.length, Game.SCREEN_HEIGHT - screen.y);
             screen_start_index = (screen.y > -1) ? screen.y : 0;
             screen_y_index_offset = (screen.y > -1) ? 0 : Math.abs(screen.y);
