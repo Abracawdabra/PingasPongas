@@ -14,10 +14,10 @@
     /**
      * @class GameScreen
      * @constructor
-     * @param {number} max_points Max points until the game ends
+     * @param {number} points_goal How many points until the game ends
      * @param {boolean} [multiplayer]
      */
-    var GameScreen = function(max_points, multiplayer) {
+    var GameScreen = function(points_goal, multiplayer) {
         pingaspongas.BaseScreen.call(this, 0, 0, pingaspongas.Game.SCREEN_WIDTH, pingaspongas.Game.SCREEN_HEIGHT);
 
         // For the pause screen
@@ -29,8 +29,8 @@
         // Round number for display purposes
         this._roundNum = 0;
 
-        // Max points until the round ends
-        this._maxPoints = max_points;
+        // How many points until the game ends
+        this._pointsGoal = points_goal;
 
         // Used for blocking input
         this._roundStarted = false;

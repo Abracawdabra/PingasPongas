@@ -74,17 +74,17 @@
      * UI initializer
      */
     p._initUI = function() {
-        var txt_resume = new DisplayObject(0, 1, "Resume");
+        var txt_resume = new DisplayObject(0, 1, "RESUME");
         txt_resume.x = pingaspongas.utils.getCenteredX(txt_resume, this);
         this.addChild(txt_resume);
         this._txtResume = txt_resume;
 
-        var txt_instructions = new DisplayObject(0, txt_resume.y + 1, "Instructions");
+        var txt_instructions = new DisplayObject(0, txt_resume.y + 1, "INSTRUCTIONS");
         txt_instructions.x = pingaspongas.utils.getCenteredX(txt_instructions, this);
         this.addChild(txt_instructions);
         this._txtInstructions = txt_instructions;
 
-        var txt_quit = new DisplayObject(0, txt_instructions.y + 1, "Quit");
+        var txt_quit = new DisplayObject(0, txt_instructions.y + 1, "QUIT");
         txt_quit.x = pingaspongas.utils.getCenteredX(txt_quit, this);
         this.addChild(txt_quit);
         this._txtQuit = txt_quit;

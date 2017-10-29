@@ -63,10 +63,18 @@
             case KeyboardKey["ENTER"]:
                 switch (this._selectedMenuItem) {
                     case MenuItem.SINGLE_PLAYER:
-                        this._parent.startSinglePlayerGame();
+                        this._singlePlayer = true;
+                        var point_selection_screen = new pingaspongas.PointsSelectionScreen(this);
+                        point_selection_screen.x = utils.getCenteredX(point_selection_screen, this);
+                        point_selection_screen.y = utils.getCenteredY(point_selection_screen, this);
+                        this._parent.addScreen(point_selection_screen);
                         break;
                     case MenuItem.MULTIPLAYER:
-                        this._parent.startMultiplayerGame();
+                        this._singlePlayer = false;
+                        var point_selection_screen = new pingaspongas.PointsSelectionScreen(this);
+                        point_selection_screen.x = utils.getCenteredX(point_selection_screen, this);
+                        point_selection_screen.y = utils.getCenteredY(point_selection_screen, this);
+                        this._parent.addScreen(point_selection_screen);
                         break;
                     case MenuItem.INSTRUCTIONS:
                         this._parent.showInstructionsScreen();
@@ -100,6 +108,20 @@
         pingaspongas.BaseScreen.prototype.update.call(this, delta);
     };
 
+    /**
+     * Starts the game
+     * @param {number} points_goal How many points until the game ends
+     */
+    p.startGame = function(points_goal) {
+        switch (this._selectedMenuItem) {
+            case MenuItem.SINGLE_PLAYER:
+                this._parent.startSinglePlayerGame(points_goal);
+                break;
+            case MenuItem.MULTIPLAYER:
+                this._parent.startMultiplayerGame(points_goal);
+        }
+    };
+
     p._initUI = function() {
         // I used http://patorjk.com/software/taag/#p=display&f=Modular&t=Pingas%20Pongas
         // to generate this.
@@ -124,19 +146,19 @@
         this.addChild(txt_title);
         this._txtTitle = txt_title;
 
-        var txt_sp = new DisplayObject(0, 0, "1 Player");
+        var txt_sp = new DisplayObject(0, 0, "1 PLAYER");
         txt_sp.x = utils.getCenteredX(txt_sp, this);
         txt_sp.y = txt_title.y + txt_title.height + 3;
         this.addChild(txt_sp);
         this._txtSinglePlayer = txt_sp;
 
-        var txt_mp = new DisplayObject(0, 0, "2 Player");
+        var txt_mp = new DisplayObject(0, 0, "2 PLAYER");
         txt_mp.x = utils.getCenteredX(txt_mp, this);
         txt_mp.y = txt_sp.y + txt_sp.height;
         this.addChild(txt_mp);
         this._txtMultiplayer = txt_mp;
 
-        var txt_instructions = new DisplayObject(0, 0, "Instructions");
+        var txt_instructions = new DisplayObject(0, 0, "INSTRUCTIONS");
         txt_instructions.x = utils.getCenteredX(txt_instructions, this);
         txt_instructions.y = txt_mp.y + txt_mp.height;
         this.addChild(txt_instructions);

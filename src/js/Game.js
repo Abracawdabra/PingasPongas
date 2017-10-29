@@ -138,14 +138,22 @@
         this.addScreen(new pingaspongas.TitleScreen());
     };
 
-    p.startSinglePlayerGame = function() {
+    /**
+     * Starts a single player game
+     * @param {number} points_goal
+     */
+    p.startSinglePlayerGame = function(points_goal) {
         this._screens = [];
-        this.addScreen(new pingaspongas.GameScreen());
+        this.addScreen(new pingaspongas.GameScreen(points_goal));
     };
 
-    p.startMultiplayerGame = function() {
+    /**
+     * Starts a multiplayer game
+     * @param {number} points_goal
+     */
+    p.startMultiplayerGame = function(points_goal) {
         this._screens = [];
-        this.addScreen(new pingaspongas.GameScreen(true));
+        this.addScreen(new pingaspongas.GameScreen(points_goal, true));
     };
 
     p.showInstructionsScreen = function() {

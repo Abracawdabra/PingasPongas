@@ -19,6 +19,7 @@ const SOURCES = [
     "./src/js/Ball.js",
     "./src/js/Paddle.js",
     "./src/js/BaseScreen.js",
+    "./src/js/PointsSelectionScreen.js",
     "./src/js/TitleScreen.js",
     "./src/js/InstructionsScreen.js",
     "./src/js/PauseScreen.js",
