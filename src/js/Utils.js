@@ -83,8 +83,8 @@
      * @return {string}
      */
     utils.strRepeat = function(str, count) {
-        var value = str;
-        var _a = 1;
+        var value = "";
+        var _a = 0;
         for (; _a<count; ++_a) {
             value += str;
         }

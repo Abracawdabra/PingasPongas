@@ -20,7 +20,7 @@
     };
     var p = pingaspongas.inherit(Paddle, pingaspongas.DisplayObject);
 
-    Paddle.MAX_LENGTH = 26;
+    Paddle.MAX_LENGTH = 17;
 
     // Getters/setters
     Object.defineProperties(p, {
@@ -28,8 +28,8 @@
         width: {
             get: function() { return this._width; },
             set: function(value) {
-                this._width = Math.max(Math.min(value, Paddle.MAX_LENGTH), 0);
-                this.text = "8" + pingaspongas.utils.strRepeat("=", this._width) + "D";
+                this._width = Math.max(Math.min(value, Paddle.MAX_LENGTH), 2);
+                this.text = "8" + pingaspongas.utils.strRepeat("=", this._width - 2) + "D";
             }
         }
     });

@@ -22,8 +22,9 @@ const SOURCES = [
     "./src/js/PointsSelectionScreen.js",
     "./src/js/TitleScreen.js",
     "./src/js/InstructionsScreen.js",
-    "./src/js/PauseScreen.js",
     "./src/js/GameScreen.js",
+    "./src/js/PauseScreen.js",
+    "./src/js/GameOverScreen.js",
     "./src/js/Game.js"
 ];
 
