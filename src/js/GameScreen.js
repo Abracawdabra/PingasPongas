@@ -107,7 +107,7 @@
     GameScreen.DEFAULT_PADDLE_LENGTH = 8;
 
     // Speed at which the paddles move
-    GameScreen.PADDLE_SPEED = 20;
+    GameScreen.PADDLE_SPEED = 25;
 
     // Initial ball speed (characters per second)
     GameScreen.INITIAL_BALL_SPEED = 10;
@@ -157,25 +157,54 @@
      * @param {number} key_code
      */
     p.onKeyChangeDown = function(key_code) {
-        if (!this._paused) {
-            if (key_code === KeyboardKey["ENTER"]) {
+        switch (key_code) {
+            case KeyboardKey["A"]:
+                this._playerOnePaddle.speed += -GameScreen.PADDLE_SPEED;
+                break;
+            case KeyboardKey["D"]:
+                this._playerOnePaddle.speed += GameScreen.PADDLE_SPEED;
+                break;
+            case KeyboardKey["ARROWLEFT"]:
+                if (this._multiplayer) {
+                    this._playerTwoPaddle.speed += -GameScreen.PADDLE_SPEED;
+                }
+                break;
+            case KeyboardKey["ARROWRIGHT"]:
+                if (this._multiplayer) {
+                    this._playerTwoPaddle.speed += GameScreen.PADDLE_SPEED;
+                }
+                break;
+            case KeyboardKey["ENTER"]:
                 var pause_screen = new pingaspongas.PauseScreen(this);
                 pause_screen.x = Math.floor(pingaspongas.Game.SCREEN_WIDTH / 2) - Math.floor(pause_screen.width / 2);
                 pause_screen.y = Math.floor(pingaspongas.Game.SCREEN_HEIGHT / 2) - Math.floor(pause_screen.height / 2);
                 this._parent.addScreen(pause_screen);
                 this.paused = true;
-            }
-            else if (this._roundStarted) {
-                switch (key_code) {
-                    case KeyboardKey["A"]:
-                        break;
-                    case KeyboardKey["D"]:
-                        break;
-                    case KeyboardKey["ARROWLEFT"]:
-                        break;
-                    case KeyboardKey["ARROWRIGHT"]:
+        }
+    };
+
+    /**
+     * Key state change up handler
+     * @override
+     * @param {number} key_code
+     */
+    p.onKeyChangeUp = function(key_code) {
+        switch (key_code) {
+            case KeyboardKey["A"]:
+                this._playerOnePaddle.speed += GameScreen.PADDLE_SPEED;
+                break;
+            case KeyboardKey["D"]:
+                this._playerOnePaddle.speed += -GameScreen.PADDLE_SPEED;
+                break;
+            case KeyboardKey["ARROWLEFT"]:
+                if (this._multiplayer) {
+                    this._playerTwoPaddle.speed += GameScreen.PADDLE_SPEED;
                 }
-            }
+                break;
+            case KeyboardKey["ARROWRIGHT"]:
+                if (this._multiplayer) {
+                    this._playerTwoPaddle.speed += -GameScreen.PADDLE_SPEED;
+                }
         }
     };
 
@@ -189,6 +218,41 @@
             var time = utils.getTime();
 
             if (!this._gameOver) {
+                var delta_seconds = delta / 1000;
+
+                var paddle_new_x = void 0;
+                if (this._playerOnePaddle.speed) {
+                    paddle_new_x = this._playerOnePaddle.realX + (delta_seconds * this._playerOnePaddle.speed);
+                    switch (this._getPaddleWallCollision(this._playerOnePaddle, paddle_new_x)) {
+                        case Collision.NONE:
+                            this._playerOnePaddle.x = paddle_new_x;
+                            break;
+                        case Collision.LEFT_WALL:
+                            this._playerOnePaddle.x = this._tableBounds.x;
+                            break;
+                        case Collision.RIGHT_WALL:
+                            this._playerOnePaddle.x = this._tableBounds.x + this._tableBounds.width - this._playerOnePaddle.width;
+                    }
+                }
+
+                if (!this._multiplayer) {
+                    // CPU code
+                }
+
+                if (this._playerTwoPaddle.speed) {
+                    paddle_new_x = this._playerTwoPaddle.realX + (delta_seconds * this._playerTwoPaddle.speed);
+                    switch (this._getPaddleWallCollision(this._playerTwoPaddle, paddle_new_x)) {
+                        case Collision.NONE:
+                            this._playerTwoPaddle.x = paddle_new_x;
+                            break;
+                        case Collision.LEFT_WALL:
+                            this._playerTwoPaddle.x = this._tableBounds.x;
+                            break;
+                        case Collision.RIGHT_WALL:
+                            this._playerTwoPaddle.x = this._tableBounds.x + this._tableBounds.width - this._playerTwoPaddle.width;
+                    }
+                }
+
                 if (this._setupRoundTime > 0 && time > this._setupRoundTime) {
                     this._setupRoundTime = 0;
                     this._setupRound();
@@ -198,25 +262,22 @@
                     this._serve();
                 }
                 else if (this._roundStarted && this._setupRoundTime === 0) {
-                    var delta_seconds = delta / 1000;
-                    var new_x = this._ball.realX + (delta_seconds * this._ball.speedX);
-                    var new_y = this._ball.realY + (delta_seconds * this._ball.speedY);
-                    switch(this._getBallCollision(new_x, new_y)) {
+                    var ball_new_x = this._ball.realX + (delta_seconds * this._ball.speedX);
+                    var ball_new_y = this._ball.realY + (delta_seconds * this._ball.speedY);
+                    switch(this._getBallCollision(ball_new_x, ball_new_y)) {
                         case Collision.NONE:
-                            this._ball.x = new_x;
-                            this._ball.y = new_y;
+                            this._ball.x = ball_new_x;
+                            this._ball.y = ball_new_y;
                             break;
                         case Collision.LEFT_WALL:
                             this._ball.speedX = Math.abs(this._ball.speedX);
-                            this._ball.x = this._tableBounds.x + (delta_seconds * this._ball.speedX);
-                            this._ball.y = new_y;
-                            this._ball.direction = pingaspongas.Direction.RIGHT;
+                            this._ball.x = this._tableBounds.x;
+                            this._ball.y = ball_new_y;
                             break;
                         case Collision.RIGHT_WALL:
-                            this._ball.speedX = this._ball.speedX * -1;
-                            this._ball.x = this._tableBounds.x + this._tableBounds.width - 1 + (delta_seconds * this._ball.speedX);
-                            this._ball.y = new_y;
-                            this._ball.direction = pingaspongas.Direction.LEFT;
+                            this._ball.speedX = -this._ball.speedX;
+                            this._ball.x = this._tableBounds.x + this._tableBounds.width - this._ball.width;
+                            this._ball.y = ball_new_y;
                             break;
                         case Collision.TOP_WALL:
                             this._servingPlayer = Player.TWO;
@@ -230,21 +291,31 @@
                             break;
                         case Collision.PLAYER_ONE_LEFT_EDGE:
                             this._lastBallHitter = Player.ONE;
+                            this._ball.speedY = -this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedX = this._ball.speedY;
                             break;
                         case Collision.PLAYER_ONE_RIGHT_EDGE:
                             this._lastBallHitter = Player.ONE;
+                            this._ball.speedY = -this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedY = Math.abs(this._ball.speedY);
                             break;
                         case Collision.PLAYER_ONE_MIDDLE:
                             this._lastBallHitter = Player.ONE;
+                            this._ball.speedY = -this.levelBallSpeed;
                             break;
                         case Collision.PLAYER_TWO_LEFT_EDGE:
                             this._lastBallHitter = Player.TWO;
+                            this._ball.speedY = this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedX = -this._ball.speedY;
                             break;
                         case Collision.PLAYER_TWO_RIGHT_EDGE:
                             this._lastBallHitter = Player.TWO;
+                            this._ball.speedY = this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedX = this._ball.speedY;
                             break;
                         case Collision.PLAYER_TWO_MIDDLE:
                             this._lastBallHitter = Player.TWO;
+                            this._ball.speedY = this.levelBallSpeed;
                             break;
                         case Collision.GOAL_HOLE:
                             this._lastPointPlayer = this._lastBallHitter;
@@ -292,10 +363,12 @@
         this.addChild(middle_line);
 
         var player_one_paddle = new pingaspongas.Paddle(0, this.height - 3, GameScreen.DEFAULT_PADDLE_LENGTH);
+        player_one_paddle.x = utils.getCenteredX(player_one_paddle, this._tableBounds);
         this.addChild(player_one_paddle);
         this._playerOnePaddle = player_one_paddle;
 
         var player_two_paddle = new pingaspongas.Paddle(0, 2, GameScreen.DEFAULT_PADDLE_LENGTH);
+        player_two_paddle.x = utils.getCenteredX(player_two_paddle, this._tableBounds);
         this.addChild(player_two_paddle);
         this._playerTwoPaddle = player_two_paddle;
 
@@ -372,10 +445,7 @@
             --this._playerOnePaddle.width;
         }
 
-        this._playerOnePaddle.x = utils.getCenteredX(this._playerOnePaddle, this._tableBounds);
-        this._playerTwoPaddle.x = utils.getCenteredX(this._playerTwoPaddle, this._tableBounds);
-
-        this._ball.x = utils.getCenteredX(this._ball, this._tableBounds);
+        this._ball.visible = false;
         this._ball.y = utils.getCenteredY(this._ball, this._tableBounds);
         this._ball.speedX = 0;
         this._ball.speedY = 0;
@@ -390,6 +460,8 @@
      * Serves the ball
      */
     p._serve = function() {
+        this._ball.x = utils.getRandBetween(this._tableBounds.x + 2, this._tableBounds.x + this._tableBounds.width - 2);
+
         var ball_speed = this.levelBallSpeed;
         switch (this._servingPlayer) {
             case Player.NONE:
@@ -401,7 +473,9 @@
             case Player.TWO:
                 this._ball.speedY = -ball_speed;
         }
-        console.log(this._servingPlayer);
+
+        this._ball.speedX = ball_speed * (Math.round(Math.random()) ? 1 : -1);
+        this._ball.visible = true;
     };
 
     /**
@@ -425,31 +499,67 @@
      * @return {Collision}
      */
     p._getBallCollision = function(new_x, new_y) {
+        new_x = Math.floor(new_x);
+        new_y = Math.floor(new_y);
+
         var ball = this._ball;
-        var ball_right_edge = new_x + 1;
+        var ball_part = (ball.direction === Direction.LEFT) ? new_x : new_x + 1;
         if (new_y < this._tableBounds.y) {
             return Collision.TOP_WALL;
         }
         else if (new_y > this._tableBounds.y + this._tableBounds.height) {
             return Collision.BOTTOM_WALL;
         }
-        else if (new_x < this._tableBounds.x) {
+        else if (ball_part < this._tableBounds.x) {
             return Collision.LEFT_WALL;
         }
-        else if (ball_right_edge > this._tableBounds.x + this._tableBounds.width) {
+        else if (ball_part >= this._tableBounds.x + this._tableBounds.width) {
             return Collision.RIGHT_WALL;
+        }
+        else {
+            var p1_paddle_right_edge = this._playerOnePaddle.x + this._playerOnePaddle.width;
+            var p2_paddle_right_edge = this._playerTwoPaddle.x + this._playerTwoPaddle.width;
+            if (ball.y === this._playerOnePaddle.y || new_y === this._playerOnePaddle.y) {
+                if (ball_part === this._playerOnePaddle.x) {
+                    return Collision.PLAYER_ONE_LEFT_EDGE;
+                }
+                else if (ball_part === p1_paddle_right_edge) {
+                    return Collision.PLAYER_ONE_RIGHT_EDGE;
+                }
+                else if (ball_part > this._playerOnePaddle.x && ball_part < p1_paddle_right_edge) {
+                    return Collision.PLAYER_ONE_MIDDLE;
+                }
+            }
+            else if (ball.y === this._playerTwoPaddle.y || new_y === this._playerTwoPaddle.y) {
+                if (ball_part === this._playerTwoPaddle.x) {
+                    return Collision.PLAYER_TWO_LEFT_EDGE;
+                }
+                else if (ball_part === p2_paddle_right_edge) {
+                    return Collision.PLAYER_TWO_RIGHT_EDGE;
+                }
+                else if (ball_part > this._playerTwoPaddle.x && ball_part < p2_paddle_right_edge) {
+                    return Collision.PLAYER_TWO_MIDDLE;
+                }
+            }
         }
 
         return Collision.NONE;
     };
 
     /**
-     * Returns any wall side the paddle has collided with
-     * @param {Paddle} paddle
+     * Returns which wall, if any, a paddle is colliding with
+     * @param {paddle} paddle
      * @param {number} new_x
      * @return {Collision}
      */
-    p._getPaddleCollision = function(paddle, new_x) {
+    p._getPaddleWallCollision = function(paddle, new_x) {
+        if (new_x < this._tableBounds.x) {
+            return Collision.LEFT_WALL;
+        }
+        else if (new_x + paddle.width > this._tableBounds.x + this._tableBounds.width) {
+            return Collision.RIGHT_WALL;
+        }
+
         return Collision.NONE;
     };
 

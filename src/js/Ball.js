@@ -12,11 +12,11 @@
     var Ball = function(x, y) {
         pingaspongas.DisplayObject.call(this, x, y, "", 2, 1);
 
-        // X movement speed (characters per second)
-        this.speedX = 0;
-
         // Y movement speed (characters per second)
         this.speedY = 0;
+
+        // X movement speed (characters per second)
+        this._speedX = 0;
 
         // Direction the ball is facing
         this._direction = 0;
@@ -31,12 +31,14 @@
             get: function() { return this._direction; },
             set: function(value) {
                 this._direction = value;
-                if (value === Direction.LEFT) {
-                    this.text = "O~";
-                }
-                else {
-                    this.text = "~O";
-                }
+                this.text = (value === Direction.LEFT) ? "O~" : "~O";
+            }
+        },
+        speedX: {
+            get: function() { return this._speedX; },
+            set: function(value) {
+                this._speedX = value;
+                this.direction = (value <= 0) ? Direction.LEFT : Direction.RIGHT;
             }
         }
     });

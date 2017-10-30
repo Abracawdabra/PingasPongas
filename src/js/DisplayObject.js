@@ -86,7 +86,7 @@
             get: function() { return this._width },
             set: function(value) {
                 this._width = value;
-                if (this._parent && this._visible) {
+                if (this._parent) {
                     this.render();
                 }
             }
@@ -95,7 +95,7 @@
             get: function() { return this._height },
             set: function(value) {
                 this._height = value;
-                if (this._parent && this._visible) {
+                if (this._parent) {
                     this.render();
                 }
             }
@@ -104,7 +104,7 @@
             get: function() { return this._text },
             set: function(value) {
                 this._text = value.toString();
-                if (this._parent && this._visible) {
+                if (this._parent) {
                     this.render();
                 }
             }
@@ -122,7 +122,7 @@
             get: function() { return this._border; },
             set: function(value) {
                 this._border = value;
-                if (this._parent && this._visible) {
+                if (this._parent) {
                     this.render();
                 }
             }
