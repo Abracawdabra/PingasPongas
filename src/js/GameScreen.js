@@ -107,7 +107,7 @@
     GameScreen.DEFAULT_PADDLE_LENGTH = 8;
 
     // Speed at which the paddles move
-    GameScreen.PADDLE_SPEED = 25;
+    GameScreen.PADDLE_SPEED = 30;
 
     // Initial ball speed (characters per second)
     GameScreen.INITIAL_BALL_SPEED = 10;
@@ -237,6 +237,15 @@
 
                 if (!this._multiplayer) {
                     // CPU code
+                    if (this._playerTwoPaddle.x > this._ball.x) {
+                        this._playerTwoPaddle.speed = -GameScreen.PADDLE_SPEED;
+                    }
+                    else if (this._playerTwoPaddle.x + this._playerTwoPaddle.width < this._ball.x) {
+                        this._playerTwoPaddle.speed = GameScreen.PADDLE_SPEED;
+                    }
+                    else {
+                        this._playerTwoPaddle.speed = 0;
+                    }
                 }
 
                 if (this._playerTwoPaddle.speed) {
@@ -439,10 +448,18 @@
         if (this._increasePaddleSize === Player.ONE) {
             ++this._playerOnePaddle.width;
             --this._playerTwoPaddle.width;
+            if (this._playerOnePaddle.x + this._playerOnePaddle.width > this._tableBounds.x + this._tableBounds.width) {
+                // Don't grow outside of the table you perv
+                --this._playerOnePaddle.x;
+            }
         }
         else if (this._increasePaddleSize === Player.TWO) {
             ++this._playerTwoPaddle.width;
             --this._playerOnePaddle.width;
+            if (this._playerTwoPaddle.x + this._playerTwoPaddle.width > this._tableBounds.x + this._tableBounds.width) {
+                // Don't grow outside of the table you perv
+                --this._playerTwoPaddle.x;
+            }
         }
 
         this._ball.visible = false;
@@ -519,7 +536,7 @@
         else {
             var p1_paddle_right_edge = this._playerOnePaddle.x + this._playerOnePaddle.width;
             var p2_paddle_right_edge = this._playerTwoPaddle.x + this._playerTwoPaddle.width;
-            if (ball.y === this._playerOnePaddle.y || new_y === this._playerOnePaddle.y) {
+            if (new_y === this._playerOnePaddle.y) {
                 if (ball_part === this._playerOnePaddle.x) {
                     return Collision.PLAYER_ONE_LEFT_EDGE;
                 }
@@ -530,7 +547,7 @@
                     return Collision.PLAYER_ONE_MIDDLE;
                 }
             }
-            else if (ball.y === this._playerTwoPaddle.y || new_y === this._playerTwoPaddle.y) {
+            else if (new_y === this._playerTwoPaddle.y) {
                 if (ball_part === this._playerTwoPaddle.x) {
                     return Collision.PLAYER_TWO_LEFT_EDGE;
                 }
