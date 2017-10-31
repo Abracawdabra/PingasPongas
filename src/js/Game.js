@@ -189,6 +189,10 @@
         window.addEventListener("keydown", this._onKeyDown);
         window.addEventListener("keyup", this._onKeyUp);
 
+        createjs.Sound.registerSound("sounds/aahh.mp3", "aahh.mp3");
+        createjs.Sound.registerSound("sounds/uuh.mp3", "uuh.mp3");
+        createjs.Sound.registerSound("sounds/squish.mp3", "squish.mp3");
+
         this.showTitleScreen();
 
         this._lastTickTime = pingaspongas.utils.getTime();

@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf ./build",
-    "prebuild": "npm run clean && bash -c \"mkdir ./build\" && bash -c \"cp -r -t ./build ./src/index.html ./src/css/styles.css\"",
+    "prebuild": "npm run clean && bash -c \"mkdir ./build\" && bash -c \"cp -r -t ./build ./src/index.html ./src/css/styles.css ./sounds\"",
     "build": "npm run prebuild && node ./build.js"
   },
   "devDependencies": {

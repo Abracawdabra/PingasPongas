@@ -111,7 +111,7 @@
     GameScreen.DEFAULT_PADDLE_LENGTH = 8;
 
     // Speed at which the paddles move
-    GameScreen.PADDLE_SPEED = 30;
+    GameScreen.PADDLE_SPEED = 32;
 
     // Initial ball speed (characters per second)
     GameScreen.INITIAL_BALL_SPEED = 10;
@@ -120,7 +120,7 @@
     GameScreen.BALL_SPEED_INCREASE = 1.5;
 
     // Maximum ball speed so it doesn't go through paddles/goals
-    GameScreen.MAX_BALL_SPEED = 38;
+    GameScreen.MAX_BALL_SPEED = 34;
 
     // Game table width
     GameScreen.TABLE_WIDTH = 39;
@@ -133,6 +133,9 @@
 
     // How long until the goal hole spawns for a round (milliseconds)
     GameScreen.GOAL_HOLE_SPAWN_TIME = 15000;
+
+    // At what level the vag goal hole spawns
+    GameScreen.VAG_GOAL_HOLE_LEVEL = 5;
 
     // Getters/setters
     Object.defineProperties(p, {
@@ -301,11 +304,13 @@
                             this._ball.speedX = Math.abs(this._ball.speedX);
                             this._ball.x = this._tableBounds.x;
                             this._ball.y = ball_new_y;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.RIGHT_WALL:
                             this._ball.speedX = -this._ball.speedX;
                             this._ball.x = this._tableBounds.x + this._tableBounds.width - this._ball.width;
                             this._ball.y = ball_new_y;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.TOP_WALL:
                             this._servingPlayer = Player.TWO;
@@ -321,37 +326,52 @@
                             this._lastBallHitter = Player.ONE;
                             this._ball.speedY = Math.max(-this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4), -GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = this._ball.speedY;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.PLAYER_ONE_RIGHT_EDGE:
                             this._lastBallHitter = Player.ONE;
                             this._ball.speedY = Math.max(-this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4), -GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = Math.abs(this._ball.speedY);;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.PLAYER_ONE_MIDDLE:
                             this._lastBallHitter = Player.ONE;
                             this._ball.speedY = -this.levelBallSpeed;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.PLAYER_TWO_LEFT_EDGE:
                             this._lastBallHitter = Player.TWO;
                             this._ball.speedY = Math.min(this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4), GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = -this._ball.speedY;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.PLAYER_TWO_RIGHT_EDGE:
                             this._lastBallHitter = Player.TWO;
                             this._ball.speedY = Math.min(this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4), GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = this._ball.speedY;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.PLAYER_TWO_MIDDLE:
                             this._lastBallHitter = Player.TWO;
                             this._ball.speedY = this.levelBallSpeed;
+                            createjs.Sound.play("squish.mp3");
                             break;
                         case Collision.GOAL_HOLE:
                             if (this._lastBallHitter !== Player.NONE) {
                                 if (this._lastBallHitter === Player.ONE) {
                                     ++this._playerOneScore;
+                                    this._servingPlayer = Player.TWO;
                                 }
                                 else if (this._lastBallHitter === Player.TWO) {
                                     ++this._playerTwoScore;
+                                    this._servingPlayer = Player.ONE;
+                                }
+
+                                if (this._goalHole.type === pingaspongas.GoalHoleType.BUTT) {
+                                    createjs.Sound.play("aahh.mp3");
+                                }
+                                else {
+                                    createjs.Sound.play("uuh.mp3");
                                 }
 
                                 this._lastPointPlayer = this._lastBallHitter;
@@ -366,6 +386,9 @@
 
                                 if (this._playerOneScore >= this._pointsGoal) {
                                     this._endGame(Player.ONE);
+                                }
+                                else if (this._playerTwoScore >= this._pointsGoal) {
+                                    this._endGame(Player.TWO);
                                 }
                                 else {
                                     this._setupRoundTime = utils.getTime() + GameScreen.END_OF_ROUND_DELAY;
@@ -493,6 +516,8 @@
                 --this._playerTwoPaddle.x;
             }
         }
+
+        this._increasePaddleSize = Player.NONE;
 
         this._ball.visible = false;
         this._ball.y = utils.getCenteredY(this._ball, this._tableBounds);
