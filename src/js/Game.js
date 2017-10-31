@@ -7,6 +7,14 @@
 (function() {
     "use strict";
 
+    var THEMES = [
+        { bgColor: "#000000", color: "#c0c0c0" },
+        { bgColor: "#000000", color: "#ff9a00" },
+        { bgColor: "#ffffff", color: "#000000" },
+        { bgColor: "#00FF5D", color: "#B30700" },
+        { bgColor: "#000000", color: "#C900FF" },
+    ];
+
     /**
      * @class Game
      * @constructor
@@ -40,6 +48,9 @@
         // List of key codes that are currently down
         this._keysDown = [];
 
+        // Current theme index
+        this._currentThemeIndex = 0;
+
         this._init();
     }
     var p = Game.prototype;
@@ -55,12 +66,6 @@
 
     // Font size for the textarea
     Game.FONT_SIZE = "16px";
-
-    // Background color of the textarea
-    Game.BACKGROUND_COLOR = "#000000";
-
-    // Text color of the textarea
-    Game.TEXT_COLOR = "#ffffff";
 
     // Desired frames per second
     Game.FPS = 25;
@@ -168,8 +173,8 @@
         var font_pixel_size = pingaspongas.utils.getFontPixelSize(Game.FONT_FAMILY, Game.FONT_SIZE);
 
         var pre = document.createElement("pre");
-        pre.style.backgroundColor = Game.BACKGROUND_COLOR;
-        pre.style.color = Game.TEXT_COLOR;
+        pre.style.backgroundColor = THEMES[this._currentThemeIndex].bgColor;
+        pre.style.color = THEMES[this._currentThemeIndex].color;
         pre.style.fontFamily = Game.FONT_FAMILY;
         pre.style.fontSize = Game.FONT_SIZE;
         pre.style.border = "0";
@@ -216,7 +221,13 @@
      */
     p._onKeyDown = function(e) {
         var key_code = pingaspongas.utils.getKeyCode(e);
-        if (this._screens.length > 0 && this._keysDown.indexOf(key_code) === -1) {
+        if (key_code === pingaspongas.KeyboardKey["SPACEBAR"]) {
+            this._currentThemeIndex = (this._currentThemeIndex + 1) % THEMES.length;
+            var theme = THEMES[this._currentThemeIndex];
+            this.preElement.style.backgroundColor = theme.bgColor;
+            this.preElement.style.color = theme.color;
+        }
+        else if (this._screens.length > 0 && this._keysDown.indexOf(key_code) === -1) {
             this._screens[this._screens.length - 1].onKeyChangeDown(key_code);
             this._keysDown.push(key_code);
             if (pingaspongas.PreventableKeys.indexOf(key_code) > -1) {
