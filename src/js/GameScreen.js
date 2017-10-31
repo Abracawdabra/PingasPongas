@@ -89,9 +89,13 @@
         this._playerOnePaddle = null;
         this._playerTwoPaddle = null;
         this._ball = null;
+        this._goalHole = null;
 
         // The last player to hit the ball
         this._lastBallHitter = Player.NONE;
+
+        // Time for when the goal hole is to be spawned
+        this._goalHoleTime = 0;
 
         this._sidePanel = null;
         this._txtRound = null;
@@ -116,16 +120,19 @@
     GameScreen.BALL_SPEED_INCREASE = 1.5;
 
     // Maximum ball speed so it doesn't go through paddles/goals
-    GameScreen.MAX_BALL_SPEED = 40;
+    GameScreen.MAX_BALL_SPEED = 38;
 
     // Game table width
     GameScreen.TABLE_WIDTH = 39;
 
     // Round Start Delay (milliseconds)
-    GameScreen.ROUND_START_DELAY = 2000;
+    GameScreen.ROUND_START_DELAY = 1200;
 
     // Delay between each round (milliseconds)
     GameScreen.END_OF_ROUND_DELAY = 1500;
+
+    // How long until the goal hole spawns for a round (milliseconds)
+    GameScreen.GOAL_HOLE_SPAWN_TIME = 15000;
 
     // Getters/setters
     Object.defineProperties(p, {
@@ -218,6 +225,18 @@
             var time = utils.getTime();
 
             if (!this._gameOver) {
+                if (!this._goalHole && this._goalHoleTime > 0 && time >= this._goalHoleTime) {
+                    var type = (Math.max(this._playerOneScore, this._playerTwoScore) >= GameScreen.VAG_GOAL_HOLE_LEVEL) ? pingaspongas.GoalHoleType.VAG : pingaspongas.GoalHoleType.BUTT;
+                    var goal_hole = new pingaspongas.GoalHole(0, 0, type, new pingaspongas.Rectangle(this._tableBounds.x, this._tableBounds.y + Math.floor(this._tableBounds.height / 2) - 3, this._tableBounds.width, 6));
+                    goal_hole.x = this._tableBounds.x + utils.getCenteredX(goal_hole, this._tableBounds);
+                    goal_hole.y = this._tableBounds.y + utils.getCenteredY(goal_hole, this._tableBounds);
+                    this.addChild(goal_hole);
+                    this._goalHole = goal_hole;
+                }
+                else if (this._goalHole) {
+                    this._goalHole.update(delta);
+                }
+
                 var delta_seconds = delta / 1000;
 
                 var paddle_new_x = void 0;
@@ -235,12 +254,12 @@
                     }
                 }
 
-                if (!this._multiplayer) {
+                if (!this._multiplayer && this._roundStarted) {
                     // CPU code
-                    if (this._playerTwoPaddle.x > this._ball.x) {
+                    if (this._playerTwoPaddle.x > this._ball.x - 1) {
                         this._playerTwoPaddle.speed = -GameScreen.PADDLE_SPEED;
                     }
-                    else if (this._playerTwoPaddle.x + this._playerTwoPaddle.width < this._ball.x) {
+                    else if (this._playerTwoPaddle.x + this._playerTwoPaddle.width < this._ball.x + 1) {
                         this._playerTwoPaddle.speed = GameScreen.PADDLE_SPEED;
                     }
                     else {
@@ -300,13 +319,13 @@
                             break;
                         case Collision.PLAYER_ONE_LEFT_EDGE:
                             this._lastBallHitter = Player.ONE;
-                            this._ball.speedY = -this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedY = Math.max(-this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4), -GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = this._ball.speedY;
                             break;
                         case Collision.PLAYER_ONE_RIGHT_EDGE:
                             this._lastBallHitter = Player.ONE;
-                            this._ball.speedY = -this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4);
-                            this._ball.speedY = Math.abs(this._ball.speedY);
+                            this._ball.speedY = Math.max(-this.levelBallSpeed - (GameScreen.BALL_SPEED_INCREASE * 4), -GameScreen.MAX_BALL_SPEED);
+                            this._ball.speedX = Math.abs(this._ball.speedY);;
                             break;
                         case Collision.PLAYER_ONE_MIDDLE:
                             this._lastBallHitter = Player.ONE;
@@ -314,12 +333,12 @@
                             break;
                         case Collision.PLAYER_TWO_LEFT_EDGE:
                             this._lastBallHitter = Player.TWO;
-                            this._ball.speedY = this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedY = Math.min(this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4), GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = -this._ball.speedY;
                             break;
                         case Collision.PLAYER_TWO_RIGHT_EDGE:
                             this._lastBallHitter = Player.TWO;
-                            this._ball.speedY = this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4);
+                            this._ball.speedY = Math.min(this.levelBallSpeed + (GameScreen.BALL_SPEED_INCREASE * 4), GameScreen.MAX_BALL_SPEED);
                             this._ball.speedX = this._ball.speedY;
                             break;
                         case Collision.PLAYER_TWO_MIDDLE:
@@ -327,21 +346,34 @@
                             this._ball.speedY = this.levelBallSpeed;
                             break;
                         case Collision.GOAL_HOLE:
-                            this._lastPointPlayer = this._lastBallHitter;
-                            if (this._lastBallHitter === Player.ONE) {
-                                ++this._playerOneScore;
-                            }
-                            else if (this._lastBallHitter === Player.TWO) {
-                                ++this._playerTwoScore;
-                            }
+                            if (this._lastBallHitter !== Player.NONE) {
+                                if (this._lastBallHitter === Player.ONE) {
+                                    ++this._playerOneScore;
+                                }
+                                else if (this._lastBallHitter === Player.TWO) {
+                                    ++this._playerTwoScore;
+                                }
 
-                            this._updateSidePanel();
+                                this._lastPointPlayer = this._lastBallHitter;
 
-                            if (this._playerOneScore >= this._pointsGoal) {
-                                this._endGame(Player.ONE);
+                                this._updateSidePanel();
+
+                                this.removeChild(this._goalHole);
+                                this._goalHole = null;
+                                this._goalHoleTime = 0;
+
+                                this._ball.visible = false;
+
+                                if (this._playerOneScore >= this._pointsGoal) {
+                                    this._endGame(Player.ONE);
+                                }
+                                else {
+                                    this._setupRoundTime = utils.getTime() + GameScreen.END_OF_ROUND_DELAY;
+                                }
                             }
                             else {
-                                this._setupRoundTime = utils.getTime() + GameScreen.END_OF_ROUND_DELAY;
+                                this._ball.x = ball_new_x;
+                                this._ball.y = ball_new_y;
                             }
                     }
                 }
@@ -467,8 +499,14 @@
         this._ball.speedX = 0;
         this._ball.speedY = 0;
 
+        if (!this._goalHole && this._goalHoleTime === 0) {
+            this._goalHoleTime = utils.getTime() + GameScreen.GOAL_HOLE_SPAWN_TIME;
+        }
+
         ++this._roundNum;
         this._updateSidePanel();
+
+        this._lastBallHitter = Player.NONE;
 
         this._roundStartTime = utils.getTime() + GameScreen.ROUND_START_DELAY;
     };
@@ -557,6 +595,9 @@
                 else if (ball_part > this._playerTwoPaddle.x && ball_part < p2_paddle_right_edge) {
                     return Collision.PLAYER_TWO_MIDDLE;
                 }
+            }
+            else if (this._goalHole && new_x >= this._goalHole.x && new_x <= this._goalHole.x + this._goalHole.width && new_y >= this._goalHole.y && new_y <= this._goalHole.y + this._goalHole.height) {
+                return Collision.GOAL_HOLE;
             }
         }
 

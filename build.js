@@ -18,6 +18,7 @@ const SOURCES = [
     "./src/js/DisplayObject.js",
     "./src/js/Ball.js",
     "./src/js/Paddle.js",
+    "./src/js/GoalHole.js",
     "./src/js/BaseScreen.js",
     "./src/js/PointsSelectionScreen.js",
     "./src/js/TitleScreen.js",
